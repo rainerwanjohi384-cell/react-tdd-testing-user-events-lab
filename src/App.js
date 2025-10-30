@@ -1,24 +1,72 @@
-function App() {
-  return (
-    <main>
-      <h1>Hi, I'm (your name)</h1>
-      <img alt="My profile pic" src="https://via.placeholder.com/350" />
-      <h2>About Me</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </p>
+import { useState } from "react";
 
-      <div>
-        <a href="https://github.com">GitHub</a>
-        <a href="https://linkedin.com">LinkedIn</a>
-      </div>
-    </main>
+function App() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    interests: [],
+    submitted: false,
+  });
+
+  const interestsList = ["React", "JavaScript", "CSS"];
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        interests: checked
+          ? [...prev.interests, value]
+          : prev.interests.filter((i) => i !== value),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFormData((prev) => ({ ...prev, submitted: true }));
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name
+          <input name="name" value={formData.name} onChange={handleChange} />
+        </label>
+        <label>
+          Email
+          <input name="email" value={formData.email} onChange={handleChange} />
+        </label>
+        <fieldset>
+          <legend>Interests</legend>
+          {interestsList.map((interest) => (
+            <label key={interest}>
+              <input
+                type="checkbox"
+                value={interest}
+                checked={formData.interests.includes(interest)}
+                onChange={handleChange}
+              />
+              {interest}
+            </label>
+          ))}
+        </fieldset>
+        <button type="submit">Submit</button>
+      </form>
+
+      {formData.submitted && (
+        <div>
+          Thank you, {formData.name}! You signed up with {formData.email}.
+          {formData.interests.length > 0 && (
+            <p>Your interests: {formData.interests.join(", ")}</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
